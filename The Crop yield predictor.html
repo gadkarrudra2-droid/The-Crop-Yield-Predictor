@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crop Yield Predictor</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #d4fc79, #96e6a1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      width: 360px;
+      text-align: center;
+    }
+    h1 {
+      color: #2e7d32;
+      font-size: 1.5rem;
+    }
+    select, input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      background: #43a047;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #2e7d32;
+    }
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #1b5e20;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🌾 Crop Yield Predictor</h1>
+    <p>Enter details below:</p>
+
+    <label for="crop">Crop Type:</label>
+    <select id="crop">
+      <option value="wheat">Wheat</option>
+      <option value="rice">Rice</option>
+      <option value="maize">Maize</option>
+      <option value="soybean">Soybean</option>
+    </select>
+
+    <label>Rainfall (mm):</label>
+    <input type="number" id="rainfall" placeholder="e.g., 500" />
+
+    <label>Temperature (°C):</label>
+    <input type="number" id="temperature" placeholder="e.g., 28" />
+
+    <label>Fertilizer Used (kg/acre):</label>
+    <input type="number" id="fertilizer" placeholder="e.g., 100" />
+
+    <button onclick="predictYield()">Predict Yield</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function predictYield() {
+      const crop = document.getElementById("crop").value;
+      const rainfall = parseFloat(document.getElementById("rainfall").value);
+      const temperature = parseFloat(document.getElementById("temperature").value);
+      const fertilizer = parseFloat(document.getElementById("fertilizer").value);
+
+      if (isNaN(rainfall) || isNaN(temperature) || isNaN(fertilizer)) {
+        document.getElementById("result").innerText = "⚠️ Please enter all values.";
+        return;
+      }
+
+      // Define parameters for each crop
+      let a, b, c, optimal_temp;
+
+      switch (crop) {
+        case "wheat":
+          a = 0.045; b = 0.09; c = 0.018; optimal_temp = 25;
+          break;
+        case "rice":
+          a = 0.06; b = 0.1; c = 0.02; optimal_temp = 28;
+          break;
+        case "maize":
+          a = 0.05; b = 0.095; c = 0.022; optimal_temp = 27;
+          break;
+        case "soybean":
+          a = 0.04; b = 0.085; c = 0.019; optimal_temp = 26;
+          break;
+        default:
+          a = 0.05; b = 0.1; c = 0.02; optimal_temp = 26;
+      }
+
+      // Yield formula for the selected crop
+      let yieldValue = a * rainfall + b * fertilizer - c * Math.pow(temperature - optimal_temp, 2);
+      yieldValue = Math.max(0, yieldValue);
+
+      document.getElementById("result").innerHTML = `
+        🌱 <strong>Estimated Yield for ${crop.charAt(0).toUpperCase() + crop.slice(1)}:</strong><br>
+        ${yieldValue.toFixed(2)} quintals per acre
+      `;
+    }
+  </script>
+</body>
+</html>
